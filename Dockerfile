@@ -1,4 +1,5 @@
-FROM python:3.13-rc-alpine3.19
+FROM python:3.11-slim-buster 
+
 
 ENV PYTHONUNBUFFERED 1
 

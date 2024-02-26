@@ -39,7 +39,7 @@ services:
     command: >
       sh -c "
           sleep 15;
-          celery -A task_prototype worker -B -l INFO --concurrency 2;
+          celery -A task worker -B -l INFO --concurrency 2;
       "
     volumes:
       - .:/app
