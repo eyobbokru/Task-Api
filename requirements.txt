@@ -1,2 +1,16 @@
 Django
 djangorestframework
+markdown
+django-filter
+drf-yasg
+
+pytest-django ==4.8.0
+pytest-cov ==4.1.0
+celery
+redis
+django-celery-results
+django-celery-beat
+channels == 4.0.0
+daphne ==4.1.0
+channels-redis
+asgiref

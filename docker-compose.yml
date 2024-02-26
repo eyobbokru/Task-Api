@@ -1,0 +1,69 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:14
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5433:5432"
+    env_file:
+      - ./.env
+    networks:
+      - task-network
+
+  app:
+    build:
+      context: .
+    command: >
+      sh -c "
+          python manage.py makemigrations;
+          python manage.py migrate;
+          python manage.py runserver 0.0.0.0:8000
+      "
+
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    volumes:
+      - ./app:/app # Mount project code onto container
+    env_file:
+      - ./.env
+    networks:
+      - task-network
+
+  celery_server:
+    build: .
+    container_name: celery_server
+    command: >
+      sh -c "
+          sleep 15;
+          celery -A task_prototype worker -B -l INFO --concurrency 2;
+      "
+    volumes:
+      - .:/app
+    environment:
+      - DEBUG=False
+      - ENV=dev
+    depends_on:
+      - app
+      - redis_server
+    env_file:
+      - ./.env
+    networks:
+      - task-network
+  redis_server:
+    image: "redis:alpine"
+    container_name: redis_server
+    networks:
+      - task-network
+    ports:
+      - "6378:6379"
+
+volumes:
+  postgres_data:
+
+networks:
+  task-network:
+    driver: bridge
