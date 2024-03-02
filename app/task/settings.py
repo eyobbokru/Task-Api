@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'drf_yasg',
     'core',
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -132,3 +133,28 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # AUTH_USER_MODEL = 'core.User'
+
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://redis:6379/0")
+CELERY_BACKEND = os.getenv("CELERY_BACKEND")
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_SERIALIZER = "json"
+
+REDIS_URL = os.getenv("REDIS_URL")
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [REDIS_URL],
+        },
+    },
+}
+
+# CELERY_BEAT_SCHEDULE = {
+#     'process_due_tasks': {
+#         'task': 'tasks.tasks.process_due_tasks',
+#         'schedule': timedelta(minutes=1),  
+#     },
+# }
